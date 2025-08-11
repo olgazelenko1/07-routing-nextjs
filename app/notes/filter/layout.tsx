@@ -1,13 +1,18 @@
-import SidebarNotes from './@sidebar/SidebarNotes/SidebarNotes';
-import styles from './LayoutNotes.module.css';
+import Link from 'next/link';
+import css from './SidebarNotes.module.css';
 
-export default function FilterLayout({ children }: { children: React.ReactNode }) {
+const tags = ['All', 'Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
+
+export default function SidebarNotes() {
   return (
-    <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <SidebarNotes />
-      </aside>
-      <main className={styles.main}>{children}</main>
-    </div>
+    <ul className={css.menuList}>
+      {tags.map((tag) => (
+        <li key={tag} className={css.menuItem}>
+          <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
+            {tag}
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
