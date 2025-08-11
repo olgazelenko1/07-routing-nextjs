@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import css from './TagsMenu.module.css';
 
-export default function TagsMenu() {
-  const tags = ['Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
+interface TagsMenuProps {
+  tags: string[];
+}
 
+export default function TagsMenu({ tags }: TagsMenuProps) {
   return (
     <div className={css.menuContainer}>
       <button className={css.menuButton}>
@@ -26,4 +28,3 @@ export default function TagsMenu() {
     </div>
   );
 }
-
