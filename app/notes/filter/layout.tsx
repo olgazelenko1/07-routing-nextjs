@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import css from './SidebarNotes.module.css';
+import css from './@sidebar/SidebarNotes/SidebarNotes.module.css';
 
 const tags = ['All', 'Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
 
