@@ -2,6 +2,10 @@
 
 import Link from 'next/link';
 import css from './Header.module.css';
+import TagsMenu from '../TagsMenu/TagsMenu';
+
+
+const tags = ['Work', 'Personal', 'Ideas', 'Important'];
 
 const Header = () => {
   return (
@@ -15,7 +19,7 @@ const Header = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/notes">Notes</Link>
+            <TagsMenu tags={tags} />
           </li>
         </ul>
       </nav>
@@ -24,3 +28,5 @@ const Header = () => {
 };
 
 export default Header;
+
+

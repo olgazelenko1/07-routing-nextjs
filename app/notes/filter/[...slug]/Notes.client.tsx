@@ -10,13 +10,14 @@ import NoteList from '@/components/NoteList/NoteList';
 import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import type { NoteResponse } from '@/types/noteResponse';
-import css from '../page.module.css';
+import css from '../../../page.module.css';
 
 interface NotesClientProps {
   page: number;
   perPage: number;
   search: string;
   initialData: NoteResponse;
+  filterTag: string;
 }
 
 export default function NotesClient({
@@ -24,6 +25,7 @@ export default function NotesClient({
   perPage,
   search: initialSearch,
   initialData,
+  filterTag,
 }: NotesClientProps) {
   const [page, setPage] = useState(initialPage);
   const [search, setSearch] = useState(initialSearch);
@@ -31,11 +33,18 @@ export default function NotesClient({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, isError } = useQuery<NoteResponse>({
-    queryKey: ['notes', page, debouncedSearch],
-    queryFn: () => fetchNotes(page, perPage, debouncedSearch),
-    initialData: page === initialPage && debouncedSearch === initialSearch ? initialData : undefined,
+    queryKey: ['notes', page, debouncedSearch, filterTag],
+    queryFn: () => fetchNotes(page, perPage, debouncedSearch, filterTag),
+    initialData:
+      page === initialPage &&
+      debouncedSearch === initialSearch &&
+      filterTag === filterTag
+        ? initialData
+        : undefined,
     placeholderData: (prev) => prev,
   });
+
+
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     setPage(selected + 1);
@@ -62,10 +71,7 @@ export default function NotesClient({
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <NoteForm
-            onSuccess={handleCloseModal}
-            onCancel={handleCloseModal}
-          />
+          <NoteForm onSuccess={handleCloseModal} onCancel={handleCloseModal} />
         </Modal>
       )}
 
