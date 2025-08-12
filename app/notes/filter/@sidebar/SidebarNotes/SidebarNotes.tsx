@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import css from './SidebarNotes.module.css';
 
+const SidebarNotes = async () => {
+
 const tags = ['All', 'Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
 
-export default function SidebarNotes() {
   return (
     <ul className={css.menuList}>
       {tags.map((tag) => (
@@ -15,4 +16,5 @@ export default function SidebarNotes() {
       ))}
     </ul>
   );
-}
+};
+export default SidebarNotes;

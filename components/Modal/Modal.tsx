@@ -1,40 +1,53 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+
 import css from './Modal.module.css';
 
-interface ModalProps {
-  onClose: () => void;
+type Props = {
   children: React.ReactNode;
-}
+  onClose: () => void;  // Додаємо onClose
+};
 
-export default function Modal({ onClose, children }: ModalProps) {
+export default function Modal({ children, onClose }: Props) {
+ 
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Замінюємо локальне закриття на onClose з пропсів
+  // const close = () => router.back();
+  const close = () => onClose();
 
   useEffect(() => {
-    setModalRoot(document.getElementById('modal-root'));
+    const root = document.getElementById('modal-root');
+    if (!root) {
+      console.error('Modal root element with id "modal-root" not found.');
+    }
+    setModalRoot(root);
 
-  
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
-        onClose();
+        close();
       }
     };
     document.addEventListener('keydown', handleKeyDown);
 
+    // Фокус на модалці
+    modalRef.current?.focus();
+
     return () => {
-      document.body.style.overflow = originalOverflow; 
+      document.body.style.overflow = originalOverflow;
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onClose]);
+  }, []);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      close();
     }
   };
 
@@ -45,13 +58,15 @@ export default function Modal({ onClose, children }: ModalProps) {
       className={css.backdrop}
       role="dialog"
       aria-modal="true"
+      tabIndex={-1}
+      ref={modalRef}
       onClick={handleBackdropClick}
     >
       <div className={css.modal}>
-        <button type="button" className={css.closeBtn} onClick={onClose}>
-          &times;
-        </button>
         {children}
+        <button className={css.button} onClick={close} aria-label="Close modal">
+          Close
+        </button>
       </div>
     </div>,
     modalRoot,

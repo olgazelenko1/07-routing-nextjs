@@ -1,16 +1,16 @@
-'use client';
-
-import Link from 'next/link';
+// components/Header/Header.tsx
 import css from './Header.module.css';
+import Link from 'next/link';
 import TagsMenu from '../TagsMenu/TagsMenu';
 
+interface HeaderProps {
+  tags?: string[];
+}
 
-const tags = ['Work', 'Personal', 'Ideas', 'Important'];
-
-const Header = () => {
+const Header = ({}: HeaderProps) => {
   return (
     <header className={css.header}>
-      <Link href="/" aria-label="Home" className={css.logo}>
+      <Link href="/" aria-label="Home">
         NoteHub
       </Link>
       <nav aria-label="Main Navigation">
@@ -19,7 +19,7 @@ const Header = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <TagsMenu tags={tags} />
+            <TagsMenu />
           </li>
         </ul>
       </nav>
@@ -28,5 +28,3 @@ const Header = () => {
 };
 
 export default Header;
-
-

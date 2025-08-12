@@ -1,27 +1,21 @@
-import NotesClient from './Notes.client';
-import { fetchNotes } from '@/lib/api';
-import type { NoteResponse } from '@/types/noteResponse';
+import { fetchNotes } from "@/lib/api";
+import NotesClient from "./Notes.client";
+import type { NoteResponse } from "@/types/noteResponse";
 
 interface PageProps {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function NotesByTags({ params }: PageProps) {
   const { slug } = await params;
 
-  const filterTag = slug?.[0] || '';
-  const tagForApi = filterTag === 'All' ? '' : filterTag;
+  const page = 1;
+  const perPage = 12;
+  const search = "";
+  const tag = slug[0] === "all" ? undefined : slug[0];
 
-  const initialData: NoteResponse = await fetchNotes(1, 12, '', tagForApi);
+  const initialData: NoteResponse = await fetchNotes(page, perPage, search, tag);
 
-  return (
-    <NotesClient
-      page={1}
-      perPage={12}
-      search=""
-      initialData={initialData}
-      filterTag={tagForApi}
-    />
-  );
+  return <NotesClient initialData={initialData} tag={tag || "All"} />;
 }
 
