@@ -32,14 +32,14 @@ export default function NotesClient({
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Скидання фільтрів при зміні тегу
+  
   useEffect(() => {
     setSearch("");
     setInputValue("");
     setCurrentPage(1);
   }, [tag]);
 
-  // Дебаунс пошуку
+
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setSearch(value);
     setCurrentPage(1);
@@ -51,7 +51,7 @@ export default function NotesClient({
     debouncedSearch(value);
   };
 
-  // Запит нотаток
+
   const queryClient = useQueryClient(); 
  const { data, isLoading, isError, isSuccess, error } = useQuery<FetchNotesResponse>({
   queryKey: ["notes", currentPage, search, tag],
@@ -63,7 +63,7 @@ export default function NotesClient({
   const notes: Note[] = data?.notes ?? [];
   const totalPages: number = data?.totalPages ?? 1;
 
-  // Тост при відсутності результатів
+
   useEffect(() => {
     if (isSuccess && !isLoading && notes.length === 0) {
       toast.error("No notes found for your request.");

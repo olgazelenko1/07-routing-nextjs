@@ -13,7 +13,7 @@ export default function TagsMenu() {
   const pathname = usePathname();
   const currentTag = pathname.split('/').pop();
 
-  // Закриття меню по Escape
+  
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
