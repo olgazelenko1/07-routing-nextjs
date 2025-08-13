@@ -10,6 +10,27 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    files: ["*.ts", "*.tsx"],
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      ecmaFeatures: {
+        jsx: true,
+      },
+      project: "./tsconfig.json", // якщо є tsconfig
+    },
+    plugins: ["@typescript-eslint", "react", "react-hooks"],
+    rules: {
+      // Тут можна додати свої правила або перевизначення
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
 ];
 

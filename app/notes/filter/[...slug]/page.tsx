@@ -1,9 +1,9 @@
 import { fetchNotes } from "@/lib/api";
 import NotesClient from "./Notes.client";
-import type { NoteResponse } from "@/types/noteResponse";
+import type { FetchNotesResponse } from "@/lib/api";
 
 interface PageProps {
-  params: Promise<{ slug: string[] }>;
+  params: { slug: string[] };
 }
 
 export default async function NotesByTags({ params }: PageProps) {
@@ -14,7 +14,7 @@ export default async function NotesByTags({ params }: PageProps) {
   const search = "";
   const tag = slug[0] === "all" ? undefined : slug[0];
 
-  const initialData: NoteResponse = await fetchNotes(page, perPage, search, tag);
+  const initialData: FetchNotesResponse = await fetchNotes(page, perPage, search, tag);
 
   return <NotesClient initialData={initialData} tag={tag || "All"} />;
 }

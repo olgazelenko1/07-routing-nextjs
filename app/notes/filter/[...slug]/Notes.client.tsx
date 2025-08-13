@@ -1,40 +1,41 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useDebouncedCallback } from 'use-debounce';
+import { useState, useEffect } from "react";
+import { useQuery,  useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
+import css from "./Note.client.module.css";
 
-import { fetchNotes } from '@/lib/api';
-import NoteList from '@/components/NoteList/NoteList';
-import SearchBox from '@/components/SearchBox/SearchBox';
-import Pagination from '@/components/Pagination/Pagination';
-import Modal from '@/components/Modal/Modal';
-import NoteForm from '@/components/NoteForm/NoteForm';
-import css from '../../../page.module.css'; // або css з твого шляху
-import toast, { Toaster } from 'react-hot-toast';
-import type { NoteResponse } from '@/types/noteResponse';
-import type { Note } from '@/types/note';
+import NoteList from "@/components/NoteList/NoteList";
+import { fetchNotes } from "@/lib/api";
+import type { Note } from "../../../../types/note";
+import type { FetchNotesResponse } from "@/lib/api";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Modal from "@/components/Modal/Modal";
+import Pagination from "@/components/Pagination/Pagination";
+import NoteForm from "@/components/NoteForm/NoteForm";
+import ErrorMessage from "../[...slug]/error";
+import toast, { Toaster } from "react-hot-toast";
 
-interface NotesClientProps {
-  initialData: NoteResponse;
+type NotesClientProps = {
+  initialData: FetchNotesResponse;
   tag: string;
   perPage?: number;
-}
+};
 
 export default function NotesClient({
   initialData,
   tag,
   perPage = 12,
 }: NotesClientProps) {
-  const [search, setSearch] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Скидаємо фільтри при зміні тега
+  // Скидання фільтрів при зміні тегу
   useEffect(() => {
-    setSearch('');
-    setInputValue('');
+    setSearch("");
+    setInputValue("");
     setCurrentPage(1);
   }, [tag]);
 
@@ -51,20 +52,21 @@ export default function NotesClient({
   };
 
   // Запит нотаток
-  const { data, isLoading, isError, isSuccess } = useQuery<NoteResponse>({
-    queryKey: ['notes', currentPage, search, tag],
-    queryFn: () => fetchNotes(currentPage, perPage, search, tag),
-    initialData: currentPage === 1 && search === '' ? initialData : undefined,
-    placeholderData: keepPreviousData,
-  });
+  const queryClient = useQueryClient(); 
+ const { data, isLoading, isError, isSuccess, error } = useQuery<FetchNotesResponse>({
+  queryKey: ["notes", currentPage, search, tag],
+  queryFn: () => fetchNotes(currentPage, perPage, search, tag),
+  initialData: currentPage === 1 && search === "" ? initialData : undefined,
+  placeholderData: keepPreviousData,
+});
 
   const notes: Note[] = data?.notes ?? [];
   const totalPages: number = data?.totalPages ?? 1;
 
-  // Тост при відсутності нотаток
+  // Тост при відсутності результатів
   useEffect(() => {
     if (isSuccess && !isLoading && notes.length === 0) {
-      toast.error('No notes found for your request.');
+      toast.error("No notes found for your request.");
     }
   }, [isSuccess, isLoading, notes.length]);
 
@@ -72,17 +74,22 @@ export default function NotesClient({
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className={css.wrapper}>
+    <div className={css.app}>
       <Toaster position="top-center" />
-      <header className={css.header}>
+      <header className={css.toolbar}>
         <SearchBox value={inputValue} onChange={handleSearchChange} />
         <button className={css.button} onClick={openModal}>
           Create note +
         </button>
       </header>
 
-      {isLoading && <p className={css.centered}>Loading, please wait...</p>}
-      {isError && <p className={css.centered}>Something went wrong.</p>}
+     {isError && error && (
+  <ErrorMessage
+    error={error as Error}
+    reset={() => queryClient.invalidateQueries({ queryKey: ["notes"] })}
+  />
+)}
+
 
       {notes.length === 0 && !isLoading && (
         <p className={css.centered}>No notes found.</p>
@@ -91,13 +98,11 @@ export default function NotesClient({
       {notes.length > 0 && <NoteList notes={notes} />}
 
       {totalPages > 1 && (
-        <div className={css.centered}>
-          <Pagination
-            page={currentPage}
-            pageCount={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+        <Pagination
+          page={currentPage}
+          pageCount={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
 
       {isModalOpen && (

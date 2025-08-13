@@ -51,3 +51,7 @@
   background-color: #f0f0f0;
   color: #333;
 }
+.menuLink.active {
+  font-weight: bold;
+  color: var(--your-accent-color);
+}

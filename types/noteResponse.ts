@@ -1,6 +1,6 @@
-import type { Note } from "./note";
+// import type { Note } from "./note";
 
-export interface NoteResponse {
-  notes: Note[];
-  totalPages: number;
-}
+// export interface NoteResponse {
+//   notes: Note[];
+//   totalPages: number;
+// }
