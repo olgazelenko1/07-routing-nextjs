@@ -1,23 +1,22 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import css from './Modal.module.css';
 
 type Props = {
   children: React.ReactNode;
-  onClose: () => void;  // Додаємо onClose
+  onClose: () => void;  
 };
 
 export default function Modal({ children, onClose }: Props) {
- 
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Замінюємо локальне закриття на onClose з пропсів
-  // const close = () => router.back();
-  const close = () => onClose();
+  const close = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   useEffect(() => {
     const root = document.getElementById('modal-root');
@@ -36,14 +35,14 @@ export default function Modal({ children, onClose }: Props) {
     };
     document.addEventListener('keydown', handleKeyDown);
 
-    // Фокус на модалці
+  
     modalRef.current?.focus();
 
     return () => {
       document.body.style.overflow = originalOverflow;
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [close]); 
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -64,11 +63,15 @@ export default function Modal({ children, onClose }: Props) {
     >
       <div className={css.modal}>
         {children}
-        <button className={css.button} onClick={close} aria-label="Close modal">
+        <button
+          className={css.button}
+          onClick={close}
+          aria-label="Close modal"
+        >
           Close
         </button>
       </div>
     </div>,
-    modalRoot,
+    modalRoot
   );
 }
