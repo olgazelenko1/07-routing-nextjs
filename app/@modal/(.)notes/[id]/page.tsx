@@ -1,29 +1,42 @@
-import {
-  QueryClient,
-  HydrationBoundary,
-  dehydrate,
-} from "@tanstack/react-query";
+"use client";
+
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import NotePreview from "./NotePreview.client";
+import css from "./NotePreview.module.css";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+export default function NoteDetailsClient() {
+  const { id } = useParams<{ id: string }>();
 
-const NotePage = async ({ params }: Props) => {
-  const { id } = await params;
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+    queryFn: () => fetchNoteById(id!),
+    enabled: !!id,
   });
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotePreview />
-    </HydrationBoundary>
-  );
-};
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-export default NotePage;
+  if (error || !note) {
+    return <p>Note not found</p>;
+  }
+
+  return (
+    <div className={css.noteDetails}>
+      <h1 className={css.title}>{note.title}</h1>
+      <p className={css.content}>{note.content}</p>
+      <p className={css.date}>
+        {new Date(note.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}
+      </p>
+    </div>
+  );
+}
