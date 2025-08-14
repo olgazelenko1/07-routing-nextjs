@@ -1,14 +1,12 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
-import Modal from '@/components/Modal/Modal';
+import { useParams } from 'next/navigation';
 import { fetchNoteById } from '@/lib/api';
 import css from './NoteDetails.client.module.css';
 
-const NotePreview = () => {
+const NoteDetailsClient = () => {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
 
   const { data: note, isLoading, error } = useQuery({
     queryKey: ['note', id],
@@ -16,22 +14,20 @@ const NotePreview = () => {
     refetchOnMount: false,
   });
 
-  const handleClose = () => {
-    router.back(); 
-  };
-
-  if (isLoading) return null; 
-  if (error || !note) return null;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error || !note) return <p>Something went wrong.</p>;
 
   return (
-    <Modal onClose={handleClose}>
-      <div className={css.container}>
-        <h2>{note.title}</h2>
-        <p>{note.content}</p>
-        <p>{new Date(note.createdAt).toLocaleDateString()}</p>
+    <div className={css.container}>
+      <div className={css.item}>
+        <div className={css.header}>
+          <h2>{note.title}</h2>
+        </div>
+        <p className={css.content}>{note.content}</p>
+        <p className={css.date}>{new Date(note.createdAt).toLocaleDateString()}</p>
       </div>
-    </Modal>
+    </div>
   );
 };
 
-export default NotePreview;
+export default NoteDetailsClient;
