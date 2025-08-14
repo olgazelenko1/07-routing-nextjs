@@ -32,9 +32,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <TanStackProvider>
           <Header />
-         {children}
+          {children}
           {modal}
           <Footer />
+          <div id="modal-root" />
         </TanStackProvider>
       </body>
     </html>
